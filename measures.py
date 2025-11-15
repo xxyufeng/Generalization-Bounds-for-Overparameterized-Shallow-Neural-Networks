@@ -4,8 +4,7 @@ import scipy.sparse
 import numpy as np
 from scipy.sparse.linalg import svds
 
-# This function calculates various measures on the given model and returns a dictionary whose keys are the measure names
-# and values are the corresponding measures on the model
+# This function calculates norms, capacity and generalization bounds on the given model
 def calculate(model, init_model, device, train_loader, margin):
 
     # switch to evaluate mode
@@ -54,7 +53,6 @@ def calculate(model, init_model, device, train_loader, margin):
         L1Dist1 = diff1.norm(p=2, dim=1 ).sum()
         # L_{2,1} distance of the weight matrix in the second layer to the initial weight matrix
         L1Dist2 = diff2.norm(p=2, dim=1 ).sum()
-
         # L_{1,2} distance of the weight matrix in the first layer to the initial weight matrix
         L2Dist1 = diff1.norm(p=2, dim=0 ).norm(p=1)
         # L_{1,2} distance of the weight matrix in the second layer to the initial weight matrix
@@ -126,7 +124,7 @@ def calculate(model, init_model, device, train_loader, margin):
         # number of parameters
         measure['#parameter'] = num_param
 
-        # Generalization bound based on the VC dimension by Harvey et al. 2017
+        # Generalization bound based on the VC dimension by Harvey et al. 2019
         VC = (2 + num_param * math.log(8 * math.e * ( H + 2 * C ) * math.log( 4 * math.e * ( H + 2 * C ) ,2), 2)
                 * (2 * (D + 1) * H + (H + 1) * C) / ((D + 1) * H + (H + 1) * C))
         measure['VC capacity'] = 8 * (C * VC * math.log(math.e * max(m / VC, 1))) + 8 * math.log(2 / delta)
@@ -178,9 +176,9 @@ def calculate(model, init_model, device, train_loader, margin):
         measure['Our capacity'] = (R + R_2) ** 2
         measure['Our generalization'] = (R + R_2) / math.sqrt(m)
 
-        ##simplified bounds
+        # Simplified bounds
         # (1) Bartlett et al. 2019
-        measure['Bartlett_2019 simp'] = D * H
+        measure['Bartlett_2019 simp'] = math.sqrt(D * H)
         # (2) Bartlett et al. 2002
         measure['Bartlett_2002 simp'] = modules[0].weight.abs().max(dim=0)[0].sum() * modules[2].weight.abs().max(dim=0)[0].sum()
         # (3) Neyshabur et al. 2015
@@ -200,7 +198,6 @@ def calculate(model, init_model, device, train_loader, margin):
         # Ours
         measure['Our simp'] = measure['path_norm']
 
-
-
     return measure
+
 
