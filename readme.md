@@ -20,7 +20,7 @@ python main_binary.py --dataset MNIST --nclasses 1 \
 The input arguments are given as follows:
 
 ```
-usage: server.py [-h] 
+usage: main_binary.py [-h] 
     [--dataset  { MNIST, ijcnn, CIFAR10, CIFAR100, SVHN, RCV1, GISETTE, w1a, a1a}] 
     [--nclasses  Number of classes]  
     [--nunits_list  Comma-separated list of hidden units] 
